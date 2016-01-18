@@ -40,11 +40,24 @@ function User(coll, username, opts) {
     find: coll.findOne.bind(coll),
     insert: coll.insert.bind(coll),
     updateHash: function(lookup, hash, cb) {
-      coll.update(lookup, { $set: { password: hash } }, function(err, updated) {
+      coll.update(lookup, { $set: { password: hash } }, function(err, results) {
         if (err) { cb(err); return; }
-
-        if (updated !== 1) { cb(new Error('failed to update password')); return; }
-
+        //prepare to handle changes between results object for 1.4 and 2.x mongodb driver
+        var updated = 0;
+        switch (typeof results){
+          case "number":
+                updated = results;
+                break;
+          case "object":
+                if (results && results.result && results.result.nModified){
+                  updated = results.result.nModified;
+                }
+                break;
+        }
+          if (results !== 1) {
+            cb(new Error('failed to update password'));
+            return;
+          }
         cb(null);
       });
     }
