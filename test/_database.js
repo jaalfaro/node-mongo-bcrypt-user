@@ -1,4 +1,5 @@
 /**
+ * Copyright (c) 2017 John Alfaro
  * Copyright (c) 2014, 2015 Tim Kuijsten
  *
  * Permission to use, copy, modify, and/or distribute this software for any
@@ -16,7 +17,8 @@
 
 'use strict';
 
-var mongodb = require('mongodb');
+var mockgo = require('mockgo');
+var mongodb = mockgo.mongodb;
 var async = require('async');
 
 var _db = require('./_db');

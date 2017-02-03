@@ -1,5 +1,6 @@
 /**
- * Copyright (c) 2014, 2015 Tim Kuijsten
+ * Copyright (c) 2017 John Alfaro
+ * * Copyright (c) 2014, 2015 Tim Kuijsten
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -16,8 +17,8 @@
 
 'use strict';
 
-var mongodb = require('mongodb');
-
+var mockgo = require('mockgo');
+var mongodb = mockgo.mongodb;
 /**
  * Open a database connection using the provided configuration.
  *
@@ -35,27 +36,28 @@ var mongodb = require('mongodb');
  *  authDb
  */
 module.exports = function(config, cb) {
-  if (typeof config !== 'object') { throw new TypeError('config must be an object'); }
-  if (typeof config.dbName !== 'string') { throw new TypeError('config.dbName must be a string'); }
-
-  config.dbHost = config.dbHost || '127.0.0.1';
-  if (typeof config.dbHost !== 'string') { throw new TypeError('config.dbHost must be a string'); }
-
-  config.dbPort = config.dbPort || 27017;
-  if (typeof config.dbPort !== 'number') { throw new TypeError('config.dbPort must be a number'); }
-
-  var db = new mongodb.Db(config.dbName, new mongodb.Server(config.dbHost, config.dbPort), { w: 1 });
-
-  db.open(function(err) {
-    if (err) { return cb(err); }
-
-    if (config.dbUser || config.dbPass) {
-      var authDb = db.db(config.authDb || config.dbName);
-      authDb.authenticate(config.dbUser, config.dbPass, function(err) {
-        cb(err, db);
-      });
-    } else {
-      cb(null, db);
-    }
-  });
+  // if (typeof config !== 'object') { throw new TypeError('config must be an object'); }
+  // if (typeof config.dbName !== 'string') { throw new TypeError('config.dbName must be a string'); }
+  //
+  // config.dbHost = config.dbHost || '127.0.0.1';
+  // if (typeof config.dbHost !== 'string') { throw new TypeError('config.dbHost must be a string'); }
+  //
+  // config.dbPort = config.dbPort || 27017;
+  // if (typeof config.dbPort !== 'number') { throw new TypeError('config.dbPort must be a number'); }
+  //
+  // var db = new mongodb.Db(config.dbName, new mongodb.Server(config.dbHost, config.dbPort), { w: 1 });
+  //
+  // db.open(function(err) {
+  //   if (err) { return cb(err); }
+  //
+  //   if (config.dbUser || config.dbPass) {
+  //     var authDb = db.db(config.authDb || config.dbName);
+  //     authDb.authenticate(config.dbUser, config.dbPass, function(err) {
+  //       cb(err, db);
+  //     });
+  //   } else {
+  //     cb(null, db);
+  //   }
+  // });
+  mockgo.getConnection(cb);
 };

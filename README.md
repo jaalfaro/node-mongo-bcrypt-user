@@ -1,4 +1,4 @@
-# mongo-bcrypt-user
+# mongo-bcryptjs-user
 
 Store and verify users with bcrypt passwords located in a mongodb collection.
 
@@ -8,7 +8,7 @@ Create a new user named "foo" in the "user" collection with the password "secr3t
 
     var assert = require('assert');
     var mongodb = require('mongodb');
-    var User = require('mongo-bcrypt-user');
+    var User = require('mongo-bcryptjs-user');
 
     // assume "db" is a mongodb.Db object
     var coll = db.collection('users');
@@ -31,7 +31,7 @@ Check if the password "secr3t" is correct for user "foo".
 
 ## Installation
 
-    $ npm install mongo-bcrypt-user
+    $ npm install mongo-bcryptjs-user
 
 ## API
 
@@ -94,6 +94,7 @@ construct a new user object.
 
 ISC
 
+Copyright (c) 2017 John Alfaro
 Copyright (c) 2014, 2015 Tim Kuijsten
 
 Permission to use, copy, modify, and/or distribute this software for any

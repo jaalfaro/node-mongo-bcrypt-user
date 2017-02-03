@@ -1,3 +1,11 @@
+2017.02.03, Version 2.0.5
+
+* switch over to use bcryptjs vs bcrypt
+* updated project dependencies
+* aligned version with bcryptjs-user
+* switched to use mockgo for testing requiring mongo to be available
+
+
 2015.02.13, Version 2.0.2
 
 * callback with error on format username or realm

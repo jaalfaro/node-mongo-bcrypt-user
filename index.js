@@ -1,5 +1,6 @@
 /**
  * Copyright (c) 2014, 2015 Tim Kuijsten
+ * Copyright (c) 2017 John Alfaro
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -17,7 +18,7 @@
 'use strict';
 
 var util = require('util');
-var BcryptUser = require('bcrypt-user');
+var BcryptUser = require('bcryptjs-user');
 
 /**
  * Store and verify users with bcrypt passwords located in a mongodb collection.
@@ -32,38 +33,38 @@ var BcryptUser = require('bcrypt-user');
  *  hide {Boolean, default false} whether to suppress errors or not (for testing)
  */
 function User(coll, username, opts) {
-  if (typeof coll !== 'object') { throw new TypeError('coll must be an object'); }
-  if (typeof username !== 'string') { throw new TypeError('username must be a string'); }
+    if (typeof coll !== 'object') { throw new TypeError('coll must be an object'); }
+    if (typeof username !== 'string') { throw new TypeError('username must be a string'); }
 
-  // setup a resolver
-  var db = {
-    find: coll.findOne.bind(coll),
-    insert: coll.insert.bind(coll),
-    updateHash: function(lookup, hash, cb) {
-      coll.update(lookup, { $set: { password: hash } }, function(err, results) {
-        if (err) { cb(err); return; }
-        //prepare to handle changes between results object for 1.4 and 2.x mongodb driver
-        var updated = 0;
-        switch (typeof results){
-          case "number":
-                updated = results;
-                break;
-          case "object":
-                if (results && results.result && results.result.nModified){
-                  updated = results.result.nModified;
+    // setup a resolver
+    var db = {
+        find: coll.findOne.bind(coll),
+        insert: coll.insert.bind(coll),
+        updateHash: function(lookup, hash, cb) {
+            coll.update(lookup, { $set: { password: hash } }, function(err, results) {
+                if (err) { cb(err); return; }
+                //prepare to handle changes between results object for 1.4 and 2.x mongodb driver
+                var updated = 0;
+                switch (typeof results){
+                    case "number":
+                        updated = results;
+                        break;
+                    case "object":
+                        if (results && results.result && results.result.nModified){
+                            updated = results.result.nModified;
+                        }
+                        break;
                 }
-                break;
+                if (updated !== 1) {
+                    cb(new Error('failed to update password'));
+                    return;
+                }
+                cb(null);
+            });
         }
-          if (results !== 1) {
-            cb(new Error('failed to update password'));
-            return;
-          }
-        cb(null);
-      });
-    }
-  };
+    };
 
-  BcryptUser.call(this, db, username, opts || {});
+    BcryptUser.call(this, db, username, opts || {});
 }
 
 util.inherits(User, BcryptUser);
@@ -81,24 +82,24 @@ module.exports = User;
  *                       undefined on failure.
  */
 User.register = function register(coll, username, password, realm, cb) {
-  if (typeof coll !== 'object') { throw new TypeError('coll must be an object'); }
-  if (typeof realm === 'function') {
-    cb = realm;
-    realm = '_default';
-  }
+    if (typeof coll !== 'object') { throw new TypeError('coll must be an object'); }
+    if (typeof realm === 'function') {
+        cb = realm;
+        realm = '_default';
+    }
 
-  try {
-    var user = new User(coll, username, { realm: realm });
-    user.register(password, function(err) {
-      if (err) { cb(err); return; }
-      cb(null, user);
-    });
-  } catch(err) {
-    process.nextTick(function() {
-      cb(err);
-    });
-    return;
-  }
+    try {
+        var user = new User(coll, username, { realm: realm });
+        user.register(password, function(err) {
+            if (err) { cb(err); return; }
+            cb(null, user);
+        });
+    } catch(err) {
+        process.nextTick(function() {
+            cb(err);
+        });
+        return;
+    }
 };
 
 /**
@@ -111,23 +112,23 @@ User.register = function register(coll, username, password, realm, cb) {
  *                       will be the user object or undefined.
  */
 User.find = function find(coll, username, realm, cb) {
-  if (typeof coll !== 'object') { throw new TypeError('coll must be an object'); }
-  if (typeof realm === 'function') {
-    cb = realm;
-    realm = '_default';
-  }
+    if (typeof coll !== 'object') { throw new TypeError('coll must be an object'); }
+    if (typeof realm === 'function') {
+        cb = realm;
+        realm = '_default';
+    }
 
-  try {
-    var user = new User(coll, username, { realm: realm });
-    user.find(function(err) {
-      if (err) { cb(err); return; }
+    try {
+        var user = new User(coll, username, { realm: realm });
+        user.find(function(err) {
+            if (err) { cb(err); return; }
 
-      cb(null, user);
-    });
-  } catch(err) {
-    process.nextTick(function() {
-      cb(err);
-    });
-    return;
-  }
+            cb(null, user);
+        });
+    } catch(err) {
+        process.nextTick(function() {
+            cb(err);
+        });
+        return;
+    }
 };
